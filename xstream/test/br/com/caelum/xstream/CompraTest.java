@@ -99,32 +99,6 @@ public class CompraTest {
 		assertEquals(xmlEsperado, xmlGerado);
 	}
 	
-	private Compra compraComLivroEMusica() {
-		List<Produto> produtos = new LinkedList<>();
-		produtos.add(new Livro("O pássaro", 10.0, "O pássaro feliz", 1589));
-		produtos.add(new Musica("O vento", 5.0, "O vento levou", 1590));
-		return new Compra(15, produtos);
-	}
-
-	private Compra compraComGeladeiraEFerro() {
-		Produto geladeira = geladeira();
-		Produto ferro = ferro();
-		List<Produto> produtos = new ArrayList<>();
-		produtos.add(geladeira);
-		produtos.add(ferro);
-		
-		Compra compra = new Compra(15, produtos);
-		return compra;
-	}
-
-	private Produto ferro() {
-		return new Produto("ferro de passar", 100, "ferro com vaporizador", 1588);
-	}
-
-	private Produto geladeira() {
-		return new Produto("geladeira", 1000, "geladeira duas portas", 1587);
-	}
-	
 	@Test
 	public void deveGerarUmaCompraComOsProdutosAdequados() {
 		String xmlDeOrigem = "<compra>\n"+
@@ -195,6 +169,73 @@ public class CompraTest {
 		String xmlGerado = xStream.toXML(compra);
 		
 		assertEquals(xmlEsperado, xmlGerado);
+	}
+	
+	@Test
+	public void deveUsarUmConversorDiferente() {
+		Compra compra = compraComLivroEMusica();
+		XStream xstream = xstreamParaCompraEProduto();
+		xstream.registerConverter(new CompraDiferenteConverter());
+		xstream.addPermission(NoTypePermission.NONE);
+		xstream.addPermission(NullPermission.NULL);
+		xstream.addPermission(PrimitiveTypePermission.PRIMITIVES);
+		xstream.allowTypeHierarchy(Collection.class);
+		xstream.allowTypesByWildcard(new String[] {
+		    "br.com.caelum.xstream.**"
+		});
+		String xmlGerado = xstream.toXML(compra);
+		String xmlEsperado = "<compra estilo=\"novo\">\n" + 
+				"  <id>15</id>\n" + 
+				"  <fornecedor>guilherme.silveira@caelum.com.br</fornecedor>\n" + 
+				"  <endereco>\n" + 
+				"    <linha1>Rua Vergueiro 3185</linha1>\n" + 
+				"    <linha2>8 andar - Sao Paulo - SP</linha2>\n" + 
+				"  </endereco>\n" + 
+				"  <produtos>\n" + 
+				"    <livro codigo=\"1589\">\n" + 
+				"      <nome>O pássaro</nome>\n" + 
+				"      <preco>10.0</preco>\n" + 
+				"      <descrição>O pássaro feliz</descrição>\n" + 
+				"    </livro>\n" + 
+				"    <musica codigo=\"1590\">\n" + 
+				"      <nome>O vento</nome>\n" + 
+				"      <preco>5.0</preco>\n" + 
+				"      <descrição>O vento levou</descrição>\n" + 
+				"    </musica>\n" + 
+				"  </produtos>\n" + 
+				"</compra>";
+		
+		assertEquals(xmlEsperado, xmlGerado);
+		
+		Compra compraDesserializada = (Compra) xstream.fromXML(xmlGerado);
+		
+		assertEquals(compra, compraDesserializada);
+	}
+	
+	private Compra compraComLivroEMusica() {
+		List<Produto> produtos = new LinkedList<>();
+		produtos.add(new Livro("O pássaro", 10.0, "O pássaro feliz", 1589));
+		produtos.add(new Musica("O vento", 5.0, "O vento levou", 1590));
+		return new Compra(15, produtos);
+	}
+
+	private Compra compraComGeladeiraEFerro() {
+		Produto geladeira = geladeira();
+		Produto ferro = ferro();
+		List<Produto> produtos = new ArrayList<>();
+		produtos.add(geladeira);
+		produtos.add(ferro);
+		
+		Compra compra = new Compra(15, produtos);
+		return compra;
+	}
+
+	private Produto ferro() {
+		return new Produto("ferro de passar", 100, "ferro com vaporizador", 1588);
+	}
+
+	private Produto geladeira() {
+		return new Produto("geladeira", 1000, "geladeira duas portas", 1587);
 	}
 
 	private XStream xstreamParaCompraEProduto() {

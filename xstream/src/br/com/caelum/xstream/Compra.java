@@ -12,6 +12,14 @@ public class Compra {
 		this.id = id;
 		this.produtos = produtos;
 	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public List<Produto> getProdutos() {
+		return produtos;
+	}
 
 	@Override
 	public int hashCode() {
