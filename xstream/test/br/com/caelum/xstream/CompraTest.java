@@ -23,12 +23,12 @@ public class CompraTest {
 	            "    <produto codigo=\"1587\">\n"+
 	            "      <nome>geladeira</nome>\n"+
 	            "      <preco>1000.0</preco>\n"+
-	            "      <descriÁ„o>geladeira duas portas</descriÁ„o>\n"+
+	            "      <descri√ß√£o>geladeira duas portas</descri√ß√£o>\n"+
 	            "    </produto>\n"+
 	            "    <produto codigo=\"1588\">\n"+
 	            "      <nome>ferro de passar</nome>\n"+
 	            "      <preco>100.0</preco>\n"+
-	            "      <descriÁ„o>ferro com vaporizador</descriÁ„o>\n"+
+	            "      <descri√ß√£o>ferro com vaporizador</descri√ß√£o>\n"+
 	            "    </produto>\n"+
 	            "  </produtos>\n"+
 	            "</compra>";
@@ -38,7 +38,7 @@ public class CompraTest {
 		XStream xStream = new XStream();
 		xStream.alias("compra", Compra.class);
 		xStream.alias("produto", Produto.class);
-		xStream.aliasField("descriÁ„o", Produto.class, "descricao");
+		xStream.aliasField("descri√ß√£o", Produto.class, "descricao");
 		xStream.useAttributeFor(Produto.class, "codigo");
 		String xmlGerado = xStream.toXML(compra);
 		
@@ -72,12 +72,12 @@ public class CompraTest {
 	            "    <produto codigo=\"1587\">\n"+
 	            "      <nome>geladeira</nome>\n"+
 	            "      <preco>1000.0</preco>\n"+
-	            "      <descriÁ„o>geladeira duas portas</descriÁ„o>\n"+
+	            "      <descri√ß√£o>geladeira duas portas</descri√ß√£o>\n"+
 	            "    </produto>\n"+
 	            "    <produto codigo=\"1588\">\n"+
 	            "      <nome>ferro de passar</nome>\n"+
 	            "      <preco>100.0</preco>\n"+
-	            "      <descriÁ„o>ferro com vaporizador</descriÁ„o>\n"+
+	            "      <descri√ß√£o>ferro com vaporizador</descri√ß√£o>\n"+
 	            "    </produto>\n"+
 	            "  </produtos>\n"+
 	            "</compra>";
@@ -94,7 +94,7 @@ public class CompraTest {
 		});
 		xStream.alias("compra", Compra.class);
 		xStream.alias("produto", Produto.class);
-		xStream.aliasField("descriÁ„o", Produto.class, "descricao");
+		xStream.aliasField("descri√ß√£o", Produto.class, "descricao");
 		xStream.useAttributeFor(Produto.class,"codigo");
 		
 		Compra compra = (Compra) xStream.fromXML(xmlDeOrigem);
@@ -107,6 +107,49 @@ public class CompraTest {
 
 		Compra compraEsperada = new Compra(15, produtos);
 		assertEquals(compraEsperada, compra);
+	}
+	
+	@Test
+	public void deveSerializarDuasGeladeirasIguais() {
+		String xmlEsperado = "<compra>\n"+
+									"  <id>15</id>\n"+
+									"  <produtos>\n"+
+									"    <produto codigo=\"1587\">\n"+
+									"      <nome>geladeira</nome>\n"+
+									"      <preco>1000.0</preco>\n"+
+									"      <descri√ß√£o>geladeira duas portas</descri√ß√£o>\n"+
+									"    </produto>\n"+
+									"    <produto codigo=\"1587\">\n"+
+									"      <nome>geladeira</nome>\n"+
+									"      <preco>1000.0</preco>\n"+
+									"      <descri√ß√£o>geladeira duas portas</descri√ß√£o>\n"+
+									"    </produto>\n"+
+									"  </produtos>\n"+
+									"</compra>";
+		
+		Compra compra = compraDuasGeladeirasIguais();
+		
+		XStream xStream = xstreamParaCompraEProduto();
+		
+		String xmlGerado = xStream.toXML(compra);
+		
+		assertEquals(xmlEsperado, xmlGerado);
+	}
+
+	private XStream xstreamParaCompraEProduto() {
+		XStream xStream = new XStream();
+		xStream.alias("compra", Compra.class);
+		xStream.alias("produto", Produto.class);
+		xStream.aliasField("descri√ß√£o", Produto.class, "descricao");
+		xStream.useAttributeFor(Produto.class, "codigo");
+		return xStream;
+	}
+
+	private Compra compraDuasGeladeirasIguais() {
+		List<Produto> produtos = new ArrayList<>();
+		produtos.add(new Produto("geladeira", 1000.0, "geladeira duas portas", 1587));
+		produtos.add(new Produto("geladeira", 1000.0, "geladeira duas portas", 1587));
+		return new Compra(15, produtos);
 	}
 
 }
